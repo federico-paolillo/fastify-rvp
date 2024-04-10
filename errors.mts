@@ -13,9 +13,9 @@ export function onFastifyError(logger: FastifyBaseLogger) {
         `An error has occurred bootstrapping Fastify on ${address}`,
         flattenErrors(error),
       );
-    }
 
-    process.exit(1);
+      process.exit(1);
+    }
   };
 }
 
