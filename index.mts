@@ -16,11 +16,12 @@ const server = Fastify({
 
 server.register(async (instance) => {
   instance.register(addCatApiKey, {
-    catApiKeyValue: process.env.FASTIFY_RVP_CATS_API_KEY,
+    catApiKey: process.env.FASTIFY_RVP_CAT_API_KEY,
   });
 
   instance.register(fastifyHttpProxy, {
     upstream: 'https://api.thecatapi.com',
+    http2: false,
   });
 });
 

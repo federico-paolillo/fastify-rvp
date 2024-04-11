@@ -9,7 +9,7 @@ const PLUGIN_NAME = 'cat-api-key-plugin';
 const AUTH_HEADER = 'x-api-key';
 
 interface AddCatApiKeyHeaderOptions {
-  catApiKeyValue: string;
+  catApiKey: string;
 }
 
 type AddCatApiKeyHeaderHookHandlerFactory = (
@@ -26,14 +26,22 @@ const addCatApiKeyHeader: AddCatApiKeyHeaderHookHandlerFactory = (
       return;
     }
 
-    this.log.info('Added Cat API header to request');
+    this.log.info(
+      { headerKey: AUTH_HEADER, headerValue: catApiKey },
+      'Added Cat API auth. header',
+    );
 
-    request.headers[AUTH_HEADER] = catApiKey;
+    // @fastify/http-proxy, which uses @fastify/reply-from consumes the raw req. headers. Any change on the Fastify-specific req. is ignored
+    // See: https://github.com/fastify/fastify-reply-from/blob/18f99d8fac6a0bb2eb4b46eb98a8486b57b6acd7/index.js#L54
+
+    request.raw.headers[AUTH_HEADER] = catApiKey;
+
+    this.log.info(request.raw.headers);
   };
 
 export const addCatApiKey: AddCatApiKeyPlugin = fp(
   async (instance: FastifyInstance, opts: AddCatApiKeyHeaderOptions) => {
     instance.log.info(`Registering plugin ${PLUGIN_NAME}`);
-    instance.addHook('onRequest', addCatApiKeyHeader(opts.catApiKeyValue));
+    instance.addHook('onRequest', addCatApiKeyHeader(opts.catApiKey));
   },
 );
